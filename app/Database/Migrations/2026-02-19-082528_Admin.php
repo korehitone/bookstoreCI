@@ -19,11 +19,13 @@ class Admin extends Migration
                 'type'       => 'VARCHAR',
                 'constraint' => '50',
                 'null'       => false,
+                'unique'     => true,
             ],
             'email' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '64',
                 'null'       => false,
+                'unique'     => true,
             ],
             'password' => [
                 'type'       => 'VARCHAR',
