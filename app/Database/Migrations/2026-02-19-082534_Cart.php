@@ -15,21 +15,20 @@ class Cart extends Migration
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
-            'uid' => [
+            // 'uid' => [
+            //     'type'       => 'VARCHAR',
+            //     'constraint' => '36',
+            // ],
+            'customer_id' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '36',
-            ],
-            'customer_id' => [
-                'type'       => 'INT',
-                'constraint' => 11,
-                'unsigned'   => true,
             ],
             'created_at DATETIME DEFAULT CURRENT_TIMESTAMP',
             'updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
         ]);
 
         $this->forge->addKey('id', true);
-        $this->forge->addForeignKey('customer_id', 'customer', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('customer_id', 'customer', 'uid', 'CASCADE', 'CASCADE');
         $this->forge->createTable('cart');
     }
 

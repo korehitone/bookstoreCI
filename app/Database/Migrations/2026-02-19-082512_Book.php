@@ -23,6 +23,7 @@ class Book extends Migration
                 'type'           => 'INT',
                 'constraint'     => 11,
                 'unsigned'       => true,
+                'null'           => true,
             ],
             'title' => [
                 'type'           => 'VARCHAR',
@@ -55,7 +56,7 @@ class Book extends Migration
         ]);
 
         $this->forge->addKey('id', true);
-        $this->forge->addForeignKey('category_id', 'category', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('category_id', 'category', 'id', 'CASCADE', 'SET NULL');
         $this->forge->createTable('book');
     }
 

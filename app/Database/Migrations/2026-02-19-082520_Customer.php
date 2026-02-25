@@ -18,6 +18,7 @@ class Customer extends Migration
             'uid' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '36',
+                'unique'     => true,
             ],
             'username' => [
                 'type'       => 'VARCHAR',
