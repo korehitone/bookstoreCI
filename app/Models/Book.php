@@ -28,8 +28,29 @@ class Book extends Model
     protected $deletedField  = 'deleted_at';
 
     // Validation
-    protected $validationRules      = [];
-    protected $validationMessages   = [];
+    protected $validationRules      = [
+        'title'        => 'required|min_length[3]|max_length[255]',
+        'author'       => 'required|min_length[3]|max_length[255]',
+        'publisher'    => 'required|max_length[64]',
+        'release_date' => 'required|valid_date',
+        'price'        => 'required|integer|greater_than_equal_to[0]',
+        'category_id'  => 'permit_empty|integer',
+        'sipnosis'     => 'permit_empty|max_length[255]',
+    ];
+    protected $validationMessages   = [
+        'title'     => ['required' => 'Book title is required.'],
+        'author'    => ['required' => 'Author name is required.'],
+        'publisher' => [
+            'required'   => 'Publisher is required.',
+            'max_length' => 'Publisher name cannot exceed 64 characters.',
+        ],
+        'price'     => [
+            'required'              => 'Price is required.',
+            'integer'               => 'Price must be a whole number.',
+            'greater_than_equal_to' => 'Price cannot be negative.',
+        ],
+        'release_date' => ['required' => 'Release date is required.'],
+    ];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
 

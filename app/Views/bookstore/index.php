@@ -2,21 +2,22 @@
 
 <?= $this->section('content') ?>
 <div class="container">
-    <div class="row align-items-center mb-5">
-        <div class="col-md-7">
+    <div class="row mb-5">
+        <div class="col-12">
             <h2 class="fw-bold text-dark mb-2">Featured Books</h2>
             <p class="text-muted">Discover our curated collection of timeless classics</p>
-        </div>
-        <div class="col-md-5">
-            <form action="<?= base_url('books') ?>" method="get">
-                <div class="input-group shadow-sm">
-                    <input type="search" name="keyword" class="form-control border-0" placeholder="Search by title or author..." value="<?= esc($keyword ?? '') ?>">
-                    <button class="btn btn-dark" type="submit">Search</button>
-                </div>
-            </form>
+
+            <div class="mt-4">
+                <form action="<?= base_url('books') ?>" method="get" class="w-100">
+                    <div class="input-group shadow-sm">
+                        <input type="search" name="keyword" class="form-control border-0 py-3" placeholder="Search by title or author..." value="<?= esc($keyword ?? '') ?>">
+                        <button class="btn btn-outline-secondary" type="submit">Search</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-    
+
     <div class="row g-4">
         <?php if (!empty($books)): ?>
             <?php foreach ($books as $book): ?>
@@ -52,6 +53,12 @@
                 <a href="<?= base_url('books') ?>" class="btn btn-link">Show all books</a>
             </div>
         <?php endif; ?>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12 d-flex justify-content-center">
+            <?= $pager->links() ?>
+        </div>
     </div>
 </div>
 <?= $this->endSection() ?>
