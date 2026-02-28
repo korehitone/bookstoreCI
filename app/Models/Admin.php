@@ -28,19 +28,47 @@ class Admin extends Model
     protected $deletedField  = 'deleted_at';
 
     // Validation
-    protected $validationRules      = [];
-    protected $validationMessages   = [];
+    protected $validationRules      = [
+        'username' => 'required|min_length[4]|max_length[50]',
+        'email'    => 'required|valid_email|max_length[64]',
+        'password' => 'permit_empty|min_length[6]|max_length[255]',
+    ];
+    protected $validationMessages   = [
+        'username' => [
+            'required'   => 'Username is required.',
+            'min_length' => 'Username must be at least 4 characters.',
+            'max_length' => 'Username cannot exceed 50 characters.',
+        ],
+        'email' => [
+            'required'    => 'Email is required.',
+            'valid_email' => 'Please enter a valid email address.',
+            'max_length'  => 'Email cannot exceed 64 characters.',
+        ],
+        'password' => [
+            'required'   => 'Password is required.',
+            'min_length' => 'Password must be at least 6 characters.',
+        ],
+    ];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
 
     // Callbacks
     protected $allowCallbacks = true;
-    protected $beforeInsert   = [];
+    protected $beforeInsert   = ['hashPassword'];
     protected $afterInsert    = [];
-    protected $beforeUpdate   = [];
+    protected $beforeUpdate   = ['hashPassword'];
     protected $afterUpdate    = [];
     protected $beforeFind     = [];
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+    
+    protected function hashPassword(array $data): array
+    {
+        if (isset($data['data']['password']) && !empty($data['data']['password'])) {
+            $data['data']['password'] = password_hash($data['data']['password'], PASSWORD_DEFAULT);
+        }
+
+        return $data;
+    }
 }

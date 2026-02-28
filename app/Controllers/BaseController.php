@@ -6,6 +6,8 @@ use CodeIgniter\Controller;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;
+use App\Models\Book;
+use App\Models\Category;
 
 /**
  * BaseController provides a convenient place for loading components
@@ -30,15 +32,19 @@ abstract class BaseController extends Controller
     /**
      * @return void
      */
+    protected $helpers           = ['url', 'form'];
+    protected array $navCategories = [];
+    
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
     {
+        parent::initController($request, $response, $logger);
+
+        $this->navCategories = (new Category())->findAll();
         // Load here all helpers you want to be available in your controllers that extend BaseController.
         // Caution: Do not put the this below the parent::initController() call below.
         // $this->helpers = ['form', 'url'];
 
         // Caution: Do not edit this line.
-        parent::initController($request, $response, $logger);
-
         // Preload any models, libraries, etc, here.
         // $this->session = service('session');
     }
