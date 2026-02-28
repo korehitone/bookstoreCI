@@ -4,11 +4,20 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\Category;
+use App\Models\Book;
 use CodeIgniter\HTTP\ResponseInterface;
+use CodeIgniter\HTTP\RequestInterface;
+use Psr\Log\LoggerInterface;
 
 class CategoryController extends BaseController
 {
     protected Category $categoryModel;
+
+    public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger): void
+    {
+        parent::initController($request, $response, $logger);
+        $this->categoryModel = new Category();
+    }
 
     // -----------------------------------------------------------------------
     // AUTH GUARD
@@ -24,10 +33,9 @@ class CategoryController extends BaseController
     }
 
     // -----------------------------------------------------------------------
-    // PUBLIC — user-facing category listing
+    // PUBLIC — User Facing
     // -----------------------------------------------------------------------
 
-    // Show all categories with their book counts (public page)
     public function index(): string
     {
         $keyword = $this->request->getGet('keyword');
@@ -36,18 +44,15 @@ class CategoryController extends BaseController
             $this->categoryModel->like('name', $keyword);
         }
 
-        $data = [
-            'title'          => 'Book Categories',
-            'categories'     => $this->categoryModel->paginate(12),
-            'pager'          => $this->categoryModel->pager,
-            'keyword'        => $keyword,
-            'navCategories'  => $this->categoryModel->findAll(),
-        ];
-
-        return view('bookstore/categories', $data);
+        return view('bookstore/categories', [
+            'title'         => 'Book Categories',
+            'categories'    => $this->categoryModel->paginate(12),
+            'pager'         => $this->categoryModel->pager,
+            'keyword'       => $keyword,
+            'navCategories' => $this->navCategories,
+        ]);
     }
 
-    // Show all books under a specific category
     public function show(int $id): mixed
     {
         $category = $this->categoryModel->find($id);
@@ -58,29 +63,22 @@ class CategoryController extends BaseController
             );
         }
 
-        // Get all books under this category via the pivot table
-        $db = \Config\Database::connect();
-
-        $books = $db->table('book')
-            ->select('book.*')
-            ->join('category_book', 'category_book.book_id = book.id')
-            ->where('category_book.category_id', $id)
-            ->get()
-            ->getResultArray();
+        $bookModel = new Book();
+        $bookModel->where('category_id', $id);
 
         return view('bookstore/categoryBooks', [
-            'title'          => "Books in: {$category['name']}",
-            'category'       => $category,
-            'books'          => $books,
-            'navCategories'  => $this->categoryModel->findAll(),
+            'title'         => esc($category['name']),
+            'category'      => $category,
+            'books'         => $bookModel->paginate(12),
+            'pager'         => $bookModel->pager,
+            'navCategories' => $this->navCategories,
         ]);
     }
 
     // -----------------------------------------------------------------------
-    // ADMIN — protected CRUD
+    // ADMIN — Protected CRUD
     // -----------------------------------------------------------------------
 
-    // Admin: list all categories with search + pagination
     public function admin_index(): mixed
     {
         if ($redirect = $this->requireLogin()) return $redirect;
@@ -91,24 +89,13 @@ class CategoryController extends BaseController
             $this->categoryModel->like('name', $keyword);
         }
 
-        $data = [
+        return view('bookstore/adminCategory', [
             'categories' => $this->categoryModel->paginate(15),
             'pager'      => $this->categoryModel->pager,
             'keyword'    => $keyword,
-        ];
-
-        return view('bookstore/adminCategory', $data); // fixed path
+        ]);
     }
 
-    // Admin: show create form
-    public function create(): mixed
-    {
-        if ($redirect = $this->requireLogin()) return $redirect;
-
-        return view('admin/categories/form', ['category' => null]);
-    }
-
-    // Admin: handle create POST
     public function store(): mixed
     {
         if ($redirect = $this->requireLogin()) return $redirect;
@@ -124,8 +111,7 @@ class CategoryController extends BaseController
         return redirect()->to('/admin/categories')->with('success', 'Category created successfully!');
     }
 
-    // Admin: show edit form
-    public function edit(int $id): mixed
+    public function update(int $id): mixed
     {
         if ($redirect = $this->requireLogin()) return $redirect;
 
@@ -137,31 +123,8 @@ class CategoryController extends BaseController
             );
         }
 
-        return view('admin/categories/form', ['category' => $category]);
-    }
-
-    // Admin: handle update POST
-    public function update(): mixed
-    {
-        if ($redirect = $this->requireLogin()) return $redirect;
-
-        $id = $this->request->getPost('id');
-
-        if (!$id) {
-            return redirect()->back()->with('error', 'Invalid category ID.');
-        }
-
-        $category = $this->categoryModel->find($id);
-
-        if (!$category) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound(
-                "Category with ID {$id} not found."
-            );
-        }
-
-        // is_unique must ignore the category's own current row
         $rules = [
-            'name' => "required|min_length[2]|max_length[255]|is_unique[category.name,id,{$id}]",
+            'name' => "required|min_length[2]|max_length[50]|is_unique[category.name,id,{$id}]",
         ];
 
         $messages = [
@@ -179,16 +142,9 @@ class CategoryController extends BaseController
         return redirect()->to('/admin/categories')->with('success', 'Category updated successfully!');
     }
 
-    // Admin: handle delete
-    public function delete(): mixed
+    public function delete(int $id): mixed
     {
         if ($redirect = $this->requireLogin()) return $redirect;
-
-        $id = $this->request->getPost('id');
-
-        if (!$id) {
-            return redirect()->back()->with('error', 'Invalid category ID.');
-        }
 
         $category = $this->categoryModel->find($id);
 

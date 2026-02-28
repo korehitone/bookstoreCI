@@ -5,32 +5,16 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-4">
-                <!-- Registration Card -->
+                <!-- Password Reset Card -->
                 <div class="card border shadow-sm rounded-3">
                     <div class="card-body p-4">
-                        <h3 class="card-title text-center fw-bold mb-4">Admin Sign Up</h3>
+                        <h3 class="card-title text-center fw-bold mb-2">Reset Password</h3>
+                        <p class="text-muted text-center mb-4 small">
+                            Enter your email address and a new password to reset your account
+                        </p>
 
-                        <form action="<?= base_url('/register/admin') ?>" method="post" novalidate>
+                        <form action="<?= base_url('/forgot-password') ?>" method="post" novalidate>
                             <?= csrf_field() ?>
-
-                            <!-- Username Field -->
-                            <div class="mb-3">
-                                <label for="username" class="form-label fw-semibold">Username</label>
-                                <input
-                                    type="text"
-                                    name="username"
-                                    id="username"
-                                    class="form-control rounded-2 <?= (session()->getFlashdata('errors')['username'] ?? false) ? 'is-invalid' : '' ?>"
-                                    placeholder="Enter username"
-                                    value="<?= esc(old('username')) ?>"
-                                    required
-                                >
-                                <?php if (session()->getFlashdata('errors')['username'] ?? false): ?>
-                                    <div class="invalid-feedback d-block">
-                                        <?= esc(session()->getFlashdata('errors')['username']) ?>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
 
                             <!-- Email Field -->
                             <div class="mb-3">
@@ -51,15 +35,15 @@
                                 <?php endif; ?>
                             </div>
 
-                            <!-- Password Field -->
+                            <!-- New Password Field -->
                             <div class="mb-3">
-                                <label for="password" class="form-label fw-semibold">Password</label>
+                                <label for="password" class="form-label fw-semibold">New Password</label>
                                 <input
                                     type="password"
                                     name="password"
                                     id="password"
                                     class="form-control rounded-2 <?= (session()->getFlashdata('errors')['password'] ?? false) ? 'is-invalid' : '' ?>"
-                                    placeholder="Enter password (min 6 characters)"
+                                    placeholder="Enter new password (min 6 characters)"
                                     required
                                 >
                                 <?php if (session()->getFlashdata('errors')['password'] ?? false): ?>
@@ -77,7 +61,7 @@
                                     name="confirm_password"
                                     id="confirm_password"
                                     class="form-control rounded-2 <?= (session()->getFlashdata('errors')['confirm_password'] ?? false) ? 'is-invalid' : '' ?>"
-                                    placeholder="Confirm your password"
+                                    placeholder="Confirm password"
                                     required
                                 >
                                 <?php if (session()->getFlashdata('errors')['confirm_password'] ?? false): ?>
@@ -89,13 +73,14 @@
 
                             <!-- Submit Button -->
                             <button type="submit" class="btn btn-primary w-100 fw-semibold rounded-2 mb-3">
-                                Create Account
+                                Reset Password
                             </button>
 
-                            <!-- Login Link -->
+                            <!-- Back to Login Link -->
                             <div class="text-center">
-                                <span class="text-muted">Already have an account?</span>
-                                <a href="<?= base_url('/login') ?>" class="text-decoration-none fw-semibold">Login</a>
+                                <a href="<?= base_url('/login') ?>" class="text-decoration-none small fw-semibold">
+                                    Back to Login
+                                </a>
                             </div>
                         </form>
                     </div>

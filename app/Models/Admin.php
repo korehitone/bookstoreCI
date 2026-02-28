@@ -31,7 +31,7 @@ class Admin extends Model
     protected $validationRules      = [
         'username' => 'required|min_length[4]|max_length[50]',
         'email'    => 'required|valid_email|max_length[64]',
-        'password' => 'required|min_length[6]|max_length[255]',
+        'password' => 'permit_empty|min_length[6]|max_length[255]',
     ];
     protected $validationMessages   = [
         'username' => [
@@ -55,8 +55,8 @@ class Admin extends Model
     // Callbacks
     protected $allowCallbacks = true;
     protected $beforeInsert   = ['hashPassword'];
-    protected $afterInsert    = ['hashPassword'];
-    protected $beforeUpdate   = [];
+    protected $afterInsert    = [];
+    protected $beforeUpdate   = ['hashPassword'];
     protected $afterUpdate    = [];
     protected $beforeFind     = [];
     protected $afterFind      = [];

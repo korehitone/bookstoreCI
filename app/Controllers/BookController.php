@@ -5,13 +5,21 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\Book;
 use CodeIgniter\HTTP\ResponseInterface;
+use CodeIgniter\HTTP\RequestInterface;
+use Psr\Log\LoggerInterface;
 
 class BookController extends BaseController
 {
     protected Book $bookModel;
 
+    public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger): void
+    {
+        parent::initController($request, $response, $logger);
+        $this->bookModel = new Book();
+    }
+
     // -----------------------------------------------------------------------
-    // PUBLIC - USER FACING
+    // PUBLIC — User Facing
     // -----------------------------------------------------------------------
 
     public function index(): string
@@ -27,20 +35,21 @@ class BookController extends BaseController
                 ->groupEnd();
         }
 
-        $data = [
-            'title'          => 'Our Book Collection',
-            'books'          => $this->bookModel->paginate(12),
-            'pager'          => $this->bookModel->pager,
-            'keyword'        => $keyword,
-            'navCategories'  => $this->categoryModel->findAll(),
-        ];
-
-        return view('bookstore/index', $data);
+        return view('bookstore/index', [
+            'title'         => 'Our Book Collection',
+            'books'         => $this->bookModel->paginate(12),
+            'pager'         => $this->bookModel->pager,
+            'keyword'       => $keyword,
+            'navCategories' => $this->navCategories,
+        ]);
     }
 
     public function details(int $id): string
     {
-        $book = $this->bookModel->find($id);
+        $book = $this->bookModel
+            ->select('book.*, category.name AS category_name')
+            ->join('category', 'category.id = book.category_id', 'left')
+            ->find($id);
 
         if (!$book) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound(
@@ -49,13 +58,13 @@ class BookController extends BaseController
         }
 
         return view('bookstore/bookPage', [
-            'book'           => $book,
-            'navCategories'  => $this->categoryModel->findAll(),
+            'book'          => $book,
+            'navCategories' => $this->navCategories,
         ]);
     }
 
     // -----------------------------------------------------------------------
-    // ADMIN - PROTECTED
+    // ADMIN — Protected
     // -----------------------------------------------------------------------
 
     public function admin_index(): string
@@ -74,17 +83,15 @@ class BookController extends BaseController
                 ->groupEnd();
         }
 
-        $data = [
-            'books'          => $this->bookModel->paginate(15),
-            'pager'          => $this->bookModel->pager,
-            'keyword'        => $keyword,
-            'navCategories'  => $this->categoryModel->findAll(),
-        ];
-
-        return view('bookstore/indexAdmin', $data);
+        return view('bookstore/indexAdmin', [
+            'books'         => $this->bookModel->paginate(15),
+            'pager'         => $this->bookModel->pager,
+            'keyword'       => $keyword,
+            'navCategories' => $this->navCategories,
+        ]);
     }
 
-    public function store()
+    public function store(): mixed
     {
         $rules = array_merge($this->bookModel->getValidationRules(), [
             'image' => 'if_exist|uploaded[image]|is_image[image]|max_size[image,2048]',
@@ -94,7 +101,7 @@ class BookController extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        $data = [
+        $this->bookModel->insert([
             'category_id'  => $this->request->getPost('category_id') ?: null,
             'title'        => $this->request->getPost('title'),
             'author'       => $this->request->getPost('author'),
@@ -103,21 +110,13 @@ class BookController extends BaseController
             'sipnosis'     => $this->request->getPost('sipnosis'),
             'price'        => (int) $this->request->getPost('price'),
             'img_url'      => $this->handleImageUpload(),
-        ];
-
-        $this->bookModel->insert($data);
+        ]);
 
         return redirect()->to('/admin/books')->with('success', 'Book added successfully!');
     }
 
-    public function update()
+    public function update(int $id): mixed
     {
-        $id = $this->request->getPost('id');
-
-        if (!$id) {
-            return redirect()->back()->with('error', 'Invalid book ID.');
-        }
-
         $book = $this->bookModel->find($id);
 
         if (!$book) {
@@ -154,7 +153,7 @@ class BookController extends BaseController
         return redirect()->to('/admin/books')->with('success', 'Book updated successfully!');
     }
 
-    public function delete(int $id)
+    public function delete(int $id): mixed
     {
         $book = $this->bookModel->find($id);
 

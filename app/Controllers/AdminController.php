@@ -5,19 +5,33 @@ namespace App\Controllers;
 use App\Models\Admin;
 use CodeIgniter\Controller;
 
+/**
+ * AdminController
+ * 
+ * Handles all admin-related operations including authentication,
+ * profile management, and account deletion.
+ */
 class AdminController extends BaseController
 {
     protected Admin $adminModel;
 
+    /**
+     * Constructor - Initialize Admin Model
+     */
     public function __construct()
     {
         $this->adminModel = new Admin();
     }
 
-    // -----------------------------------------------------------------------
-    // AUTH GUARD
-    // -----------------------------------------------------------------------
+    // ===================================================================
+    // AUTH GUARD - Middleware-like protection functions
+    // ===================================================================
 
+    /**
+     * Require authenticated admin login
+     * 
+     * @return mixed Redirect response if not logged in, null otherwise
+     */
     private function requireLogin(): mixed
     {
         if (!session()->get('isLoggedIn') || !session()->get('isAdmin')) {
@@ -27,15 +41,25 @@ class AdminController extends BaseController
         return null;
     }
 
-    // -----------------------------------------------------------------------
-    // REGISTRATION
-    // -----------------------------------------------------------------------
+    // ===================================================================
+    // REGISTRATION - New admin account creation
+    // ===================================================================
 
+    /**
+     * Display admin registration form
+     * 
+     * @return string Registration view
+     */
     public function register(): string
     {
         return view('users/signupAdmin');
     }
 
+    /**
+     * Process admin registration with validation
+     * 
+     * @return mixed Redirect with success/error message
+     */
     public function attemptRegister(): mixed
     {
         $rules = [
@@ -64,10 +88,16 @@ class AdminController extends BaseController
         return redirect()->to('/login')->with('success', 'Registration successful. Please login.');
     }
 
-    // -----------------------------------------------------------------------
-    // LOGIN / LOGOUT
-    // -----------------------------------------------------------------------
+    // ===================================================================
+    // LOGIN / LOGOUT - Authentication management
+    // ===================================================================
 
+    /**
+     * Display admin login form
+     * Redirects to admin panel if already logged in
+     * 
+     * @return mixed Login view or redirect
+     */
     public function login(): mixed
     {
         if (session()->get('isLoggedIn')) {
@@ -77,6 +107,11 @@ class AdminController extends BaseController
         return view('users/login');
     }
 
+    /**
+     * Process admin login with credentials validation
+     * 
+     * @return mixed Redirect with success/error message
+     */
     public function attemptLogin(): mixed
     {
         $rules = [
@@ -106,16 +141,26 @@ class AdminController extends BaseController
         return redirect()->to('/admin/books');
     }
 
+    /**
+     * Logout admin and destroy session
+     * 
+     * @return mixed Redirect to login page
+     */
     public function logout(): mixed
     {
         session()->destroy();
         return redirect()->to('/login')->with('success', 'You have been logged out.');
     }
 
-    // -----------------------------------------------------------------------
-    // PROFILE
-    // -----------------------------------------------------------------------
+    // ===================================================================
+    // PROFILE - Admin profile management
+    // ===================================================================
 
+    /**
+     * Display admin profile information
+     * 
+     * @return mixed Profile view with admin data
+     */
     public function show(): mixed
     {
         if ($redirect = $this->requireLogin()) return $redirect;
@@ -126,16 +171,12 @@ class AdminController extends BaseController
         ]);
     }
 
-    public function editProfile(): mixed
-    {
-        if ($redirect = $this->requireLogin()) return $redirect;
-
-        return view('users/editProfile', [
-            'title' => 'Edit Profile',
-            'admin' => $this->adminModel->find(session()->get('admin_id')),
-        ]);
-    }
-
+    /**
+     * Update admin profile information (username and email)
+     * Validates uniqueness excluding current admin record
+     * 
+     * @return mixed Redirect with success/error message
+     */
     public function updateProfile(): mixed
     {
         if ($redirect = $this->requireLogin()) return $redirect;
@@ -167,40 +208,58 @@ class AdminController extends BaseController
         return redirect()->to('/admin/profile')->with('success', 'Profile updated successfully!');
     }
 
+    /**
+     * Delete admin account permanently
+     * Destroys session and deletes admin record from database
+     * 
+     * @return mixed Redirect to login with confirmation message
+     */
     public function deleteProfile(): mixed
     {
         if ($redirect = $this->requireLogin()) return $redirect;
 
         $id = session()->get('admin_id');
 
+        // Validate admin ID exists
         if (!$id) {
             return redirect()->to('/login')->with('error', 'Invalid admin ID.');
         }
 
+        // Verify admin exists before deletion
         $admin = $this->adminModel->find($id);
-
         if (!$admin) {
             return redirect()->to('/login')->with('error', 'Admin not found.');
         }
 
-        // Delete the admin account
+        // Delete the admin account from database
         $this->adminModel->delete($id);
 
-        // Destroy session
+        // Destroy session to logout user
         session()->destroy();
 
         return redirect()->to('/login')->with('success', 'Your account has been deleted successfully.');
     }
 
-    // -----------------------------------------------------------------------
-    // FORGOT / RESET PASSWORD
-    // -----------------------------------------------------------------------
+    // ===================================================================
+    // PASSWORD RECOVERY - Forgot and reset password functionality
+    // ===================================================================
 
+    /**
+     * Display forgot password form
+     * 
+     * @return string Forgot password view
+     */
     public function forgotPassword(): string
     {
         return view('users/forgotPass');
     }
 
+    /**
+     * Process password reset with email verification
+     * Validates email exists and updates password
+     * 
+     * @return mixed Redirect with success message
+     */
     public function resetPassword(): mixed
     {
         $rules = [
@@ -221,10 +280,12 @@ class AdminController extends BaseController
             ->where('email', $this->request->getPost('email'))
             ->first();
 
+        // Security note: Return generic message to prevent email enumeration
         if (!$admin) {
             return redirect()->to('/login')->with('success', 'If that email exists, the password has been reset.');
         }
 
+        // Update password for the admin account
         $this->adminModel->update($admin['id'], [
             'password' => $this->request->getPost('password'),
         ]);
