@@ -12,7 +12,7 @@ class ViewCartItem extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['cart_id', 'book_id', 'title', 'author', 'img_url', 'quantity', 'total_price'];
+    protected $allowedFields    = [];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
