@@ -1,30 +1,19 @@
-<?= $this->extend('layout/base') ?>
+<?= $this->extend('customer/base') ?>
 
 <?= $this->section('content') ?>
 
 <div class="container">
 
     <!-- ===================================================================
-         PAGE HEADER WITH SEARCH
+         PAGE HEADER
     =================================================================== -->
     <div class="row mb-5">
         <div class="col-12">
-            <h2 class="fw-bold text-dark mb-2">Featured Books</h2>
-            <p class="text-muted">Discover our curated collection of timeless classics</p>
-
-            <!-- Search Bar -->
-            <form action="<?= base_url('books') ?>" method="get" class="mt-4">
-                <div class="input-group shadow-sm">
-                    <input 
-                        type="search" 
-                        name="keyword" 
-                        class="form-control border-0 py-3" 
-                        placeholder="Search by title or author..."
-                        value="<?= esc($keyword ?? '') ?>"
-                    >
-                    <button class="btn btn-outline-secondary" type="submit">Search</button>
-                </div>
-            </form>
+            <h2 class="fw-bold text-dark mb-2"><?= esc($category['name']) ?></h2>
+            <p class="text-muted">
+                <?= count($books) ?> book<?= count($books) !== 1 ? 's' : '' ?> in this category
+            </p>
+            <a href="<?= base_url('books') ?>" class="text-decoration-none text-muted small">← Back to all books</a>
         </div>
     </div>
 
@@ -41,12 +30,12 @@
                                 <!-- Book Cover -->
                                 <div class="col-4">
                                     <div class="bg-gradient bg-primary bg-opacity-10 rounded-3 d-flex align-items-center justify-content-center p-2" style="height: 160px;">
-                                        <?php if ($book['img_url']): ?>
+                                        <?php if (!empty($book['img_url'])): ?>
                                             <img 
-                                                src="<?= base_url('uploads/' . $book['img_url']) ?>" 
+                                                src="<?= base_url('uploads/books/' . esc($book['img_url'])) ?>" 
                                                 alt="<?= esc($book['title']) ?>"
                                                 class="img-fluid rounded shadow-sm" 
-                                                style="max-height: 100%;"
+                                                style="max-height: 100%; object-fit: cover;"
                                             >
                                         <?php else: ?>
                                             <span class="text-primary fw-semibold small">No Cover</span>
@@ -73,7 +62,7 @@
         <?php else: ?>
             <!-- Empty State -->
             <div class="col-12 text-center py-5">
-                <h4 class="text-muted">No books found.</h4>
+                <h4 class="text-muted">No books in this category yet.</h4>
                 <a href="<?= base_url('books') ?>" class="btn btn-link">Show all books</a>
             </div>
         <?php endif; ?>
@@ -84,7 +73,9 @@
     =================================================================== -->
     <div class="row mt-5">
         <div class="col-12 d-flex justify-content-center">
-            <?= $pager->links() ?>
+            <?php if (isset($pager)): ?>
+                <?= $pager->links() ?>
+            <?php endif; ?>
         </div>
     </div>
 

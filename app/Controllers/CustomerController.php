@@ -3,16 +3,19 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Models\Cart;
 use App\Models\Customer;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class CustomerController extends BaseController
 {
     protected $model;
+    protected $cart;
 
     public function __construct()
     {
         $this->model = new Customer();
+        $this->cart = new Cart();
         $this->helpers = ['form', 'url', 'uuid'];
     }
 
@@ -26,7 +29,7 @@ class CustomerController extends BaseController
             'validation' => \Config\Services::validation()
         ];
 
-        return view('login', $data);
+        return view('customer/login', $data);
     }
 
     public function register()
@@ -77,6 +80,7 @@ class CustomerController extends BaseController
         $save = $this->model->save($customer);
 
         if ($save) {
+            $this->cart->save(['customer_id' => $customer['uid']]);
             return redirect()->to('login');
         } else {
             session()->setFlashdata('error', 'Some problems occured, please try again.');
@@ -239,12 +243,25 @@ class CustomerController extends BaseController
             return redirect()->to('login');
         }
 
+        $user = $this->model->where('uid', $session->get('user_uid'));
+        if (!$user) {
+            return redirect()->to('login')->with('error', 'User not found.');
+        }
+
         $delete = $this->model->where('uid', $session->get('user_uid'))->delete();
         if ($delete) {
+            $session->destroy();
             return redirect()->to('login');
         } else {
             session()->setFlashdata('error', 'Some problems occured, please try again.');
             return redirect()->to('profile');
         }
+    }
+
+
+    public function logout()
+    {
+        session()->destroy();
+        return redirect()->to('login')->with('success', 'You have been logged out.');
     }
 }

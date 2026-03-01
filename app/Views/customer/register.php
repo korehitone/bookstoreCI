@@ -1,5 +1,16 @@
-<?= $this->extend('base') ?>
+<?= $this->extend('customer/base') ?>
 <?= $this->section('content') ?>
+
+<?php
+$validation = \Config\Services::validation();
+$errors = session()->getFlashdata('errors');
+
+if ($errors) {
+    foreach ($errors as $field => $message) {
+        $validation->setError($field, $message);
+    }
+}
+?>
 
 
 <div class="container">
@@ -9,17 +20,6 @@
                 <div class="card-body p-4">
                     <h3 class="card-title text-center mb-4">Register</h3>
 
-                    <?php
-                    $validation = \Config\Services::validation();
-                    $errors = session()->getFlashdata('errors');
-                  
-                    if ($errors) {
-                        foreach ($errors as $field => $message) {
-                            $validation->setError($field, $message);
-                        }
-                    }
-                    ?>
-
                     <!-- <form> -->
                     <?= form_open('register/save'); ?>
                     <?= csrf_field(); ?>
@@ -28,7 +28,7 @@
                         <label for="username" class="form-label">Username</label>
                         <input type="text" class="form-control <?= ($validation->hasError('username')) ? 'is-invalid' : '' ?>"
                             name="username" id="username" placeholder="Enter username" value="<?= old('username'); ?>">
-                        
+
                         <?php if ($validation->getError('username')): ?>
                             <div class="invalid-feedback">
                                 <?= $validation->showError('username'); ?>
@@ -40,7 +40,7 @@
                         <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control <?= ($validation->hasError('email')) ? 'is-invalid' : '' ?>"
                             name="email" id="email" placeholder="Enter email" value="<?= old('email'); ?>">
-                      
+
                         <?php if ($validation->getError('email')): ?>
                             <div class="invalid-feedback">
                                 <?= $validation->showError('email'); ?>
@@ -52,7 +52,7 @@
                         <label for="password" class="form-label">Password</label>
                         <input type="password" class="form-control <?= ($validation->hasError('password')) ? 'is-invalid' : '' ?>"
                             name="password" id="password" placeholder="Enter password">
-                        
+
                         <?php if ($validation->getError('password')): ?>
                             <div class="invalid-feedback">
                                 <?= $validation->getError('password'); ?>
@@ -64,7 +64,7 @@
                         <label for="confpassword" class="form-label">Confirm Password</label>
                         <input type="password" class="form-control <?= ($validation->hasError('confpassword')) ? 'is-invalid' : '' ?>"
                             name="confpassword" id="confpassword" placeholder="Confirm password">
-                
+
                         <?php if ($validation->getError('confpassword')): ?>
                             <div class="invalid-feedback">
                                 <?= $validation->getError('confpassword'); ?>

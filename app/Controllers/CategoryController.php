@@ -12,11 +12,13 @@ use Psr\Log\LoggerInterface;
 class CategoryController extends BaseController
 {
     protected Category $categoryModel;
+    protected $db;
 
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger): void
     {
         parent::initController($request, $response, $logger);
         $this->categoryModel = new Category();
+        $this->db = \Config\Database::connect();
     }
 
     // -----------------------------------------------------------------------
@@ -25,8 +27,8 @@ class CategoryController extends BaseController
 
     private function requireLogin(): mixed
     {
-        if (!session()->get('isLoggedIn') || !session()->get('isAdmin')) {
-            return redirect()->to('/login')->with('error', 'Please login first.');
+        if (!session()->get('logged_in') || !session()->get('role') == 'admin') {
+            return redirect()->to('admin/login')->with('error', 'Please login first.');
         }
 
         return null;
@@ -66,8 +68,8 @@ class CategoryController extends BaseController
         $bookModel = new Book();
         $bookModel->where('category_id', $id);
 
-        return view('bookstore/categoryBooks', [
-            'title'         => esc($category['name']),
+        return view('customer/category', [
+            'title'         => 'category "'.esc($category['name']).'"' ,
             'category'      => $category,
             'books'         => $bookModel->paginate(12),
             'pager'         => $bookModel->pager,
@@ -89,7 +91,8 @@ class CategoryController extends BaseController
             $this->categoryModel->like('name', $keyword);
         }
 
-        return view('bookstore/adminCategory', [
+        return view('admin/category', [
+            'title' => 'Category Management',
             'categories' => $this->categoryModel->paginate(15),
             'pager'      => $this->categoryModel->pager,
             'keyword'    => $keyword,
@@ -98,21 +101,33 @@ class CategoryController extends BaseController
 
     public function store(): mixed
     {
+        $session = session();
+
         if ($redirect = $this->requireLogin()) return $redirect;
 
         if (!$this->validate($this->categoryModel->getValidationRules())) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
+        $admin_id = $session->get('admin_id');
+        $admin_name = $session->get('admin_name');
+        $admin_email = $session->get('admin_email');
+
+        $this->db->query("SET @admin_id = ?", $admin_id);
+        $this->db->query("SET @admin_username = ?", $admin_name);
+        $this->db->query("SET @admin_email = ?", $admin_email);
+
         $this->categoryModel->insert([
             'name' => $this->request->getPost('name'),
         ]);
 
-        return redirect()->to('/admin/categories')->with('success', 'Category created successfully!');
+        return redirect()->to('admin/categories')->with('success', 'Category created successfully!');
     }
 
     public function update(int $id): mixed
     {
+        $session = session();
+
         if ($redirect = $this->requireLogin()) return $redirect;
 
         $category = $this->categoryModel->find($id);
@@ -135,6 +150,14 @@ class CategoryController extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
+        $admin_id = $session->get('admin_id');
+        $admin_name = $session->get('admin_name');
+        $admin_email = $session->get('admin_email');
+        
+        $this->db->query("SET @admin_id = ?", $admin_id);
+        $this->db->query("SET @admin_username = ?", $admin_name);
+        $this->db->query("SET @admin_email = ?", $admin_email);
+
         $this->categoryModel->update($id, [
             'name' => $this->request->getPost('name'),
         ]);
@@ -144,6 +167,8 @@ class CategoryController extends BaseController
 
     public function delete(int $id): mixed
     {
+        $session = session();
+
         if ($redirect = $this->requireLogin()) return $redirect;
 
         $category = $this->categoryModel->find($id);
@@ -153,6 +178,14 @@ class CategoryController extends BaseController
                 "Category with ID {$id} not found."
             );
         }
+
+        $admin_id = $session->get('admin_id');
+        $admin_name = $session->get('admin_name');
+        $admin_email = $session->get('admin_email');
+        
+        $this->db->query("SET @admin_id = ?", $admin_id);
+        $this->db->query("SET @admin_username = ?", $admin_name);
+        $this->db->query("SET @admin_email = ?", $admin_email);
 
         $this->categoryModel->delete($id);
 

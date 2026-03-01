@@ -1,4 +1,4 @@
-<?= $this->extend('layout/base') ?>
+<?= $this->extend('admin/base') ?>
 
 <?= $this->section('content') ?>
 
@@ -18,7 +18,7 @@
             </div>
 
             <!-- SEARCH BAR -->
-            <form method="get" action="<?= base_url('/admin/categories') ?>" class="mb-4">
+            <form method="get" action="<?= base_url('admin/categories') ?>" class="mb-4">
                 <div class="input-group w-100">
                     <input
                         type="search"

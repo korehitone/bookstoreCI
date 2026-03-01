@@ -1,4 +1,4 @@
-<?= $this->extend('base') ?>
+<?= $this->extend('customer/base') ?>
 <?= $this->section('content') ?>
 
 <div class="container">

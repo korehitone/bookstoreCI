@@ -3,6 +3,8 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Models\Book;
+use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\ViewCartItem;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -11,17 +13,54 @@ class CartItemController extends BaseController
 {
     protected $model;
     protected $viewModel;
+    protected $bookModel;
+    protected $cartModel;
 
     public function __construct()
     {
         $this->model = new CartItem();
         $this->viewModel = new ViewCartItem();
+        $this->bookModel = new Book();
+        $this->cartModel = new Cart();
         $this->helpers = ['form', 'url'];
     }
 
     public function index()
     {
         //
+    }
+
+    public function add()
+    {
+        if (!$this->validate([
+            'book_id' => 'required|is_natural_no_zero',
+            'quantity' => 'required|is_natural_no_zero|less_than_equal_to[100]'
+        ])) {
+            return redirect()->back()->with('error', 'Invalid quantity');
+        }
+
+        $bookId = $this->request->getPost('book_id');
+        $quantity = $this->request->getPost('quantity');
+        $customerId = session()->get('user_uid');
+
+        $book = $this->bookModel->find($bookId);
+        if (!$book) {
+            return redirect()->back()->with('error', 'Book not found');
+        }
+
+        $cart = $this->cartModel->where('customer_id', $customerId)->first();
+        
+        if (!$cart) {
+            return redirect()->back()->with('error', 'Cart not found');
+        }
+
+        $this->model->insert([
+            'cart_id' => $cart['id'],
+            'book_id' => $bookId,
+            'quantity' => $quantity
+        ]);
+        
+        return redirect()->to('cart')->with('success', 'Item added to cart successfully');
     }
 
     public function update()

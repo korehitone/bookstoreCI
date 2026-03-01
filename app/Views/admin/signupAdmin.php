@@ -1,4 +1,4 @@
-<?= $this->extend('layout/authLayout') ?>
+<?= $this->extend('admin/base') ?>
 
 <?= $this->section('content') ?>
 
@@ -10,7 +10,7 @@
                     <div class="card-body p-4">
                         <h3 class="card-title text-center fw-bold mb-4">Admin Sign Up</h3>
 
-                        <form action="<?= base_url('/register/admin') ?>" method="post" novalidate>
+                        <form action="<?= base_url('admin/register') ?>" method="post" novalidate>
                             <?= csrf_field() ?>
 
                             <!-- Username Field -->

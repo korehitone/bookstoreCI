@@ -1,4 +1,4 @@
-<?= $this->extend('layout/authLayout') ?>
+<?= $this->extend('admin/base') ?>
 
 <?= $this->section('content') ?>
 
@@ -10,7 +10,7 @@
                     <div class="card-body p-4">
                         <h3 class="card-title text-center fw-bold mb-4">Admin Login</h3>
 
-                        <form action="<?= base_url('/login') ?>" method="post" novalidate>
+                        <form action="<?= base_url('admin/login') ?>" method="post" novalidate>
                             <?= csrf_field() ?>
 
                             <!-- Username Field -->
@@ -50,11 +50,11 @@
                                 <?php endif; ?>
 
                                 <!-- Forgot Password Link -->
-                                <div class="text-end mt-2">
-                                    <a href="<?= base_url('/forgot-password') ?>" class="text-decoration-none small fw-semibold">
+                                <!-- <div class="text-end mt-2">
+                                    <a href="<>?= base_url('/forgot-password') ?>" class="text-decoration-none small fw-semibold">
                                         Forgot Password?
                                     </a>
-                                </div>
+                                </div> -->
                             </div>
 
                             <!-- Submit Button -->
@@ -65,7 +65,7 @@
                             <!-- Sign Up Link -->
                             <div class="text-center">
                                 <span class="text-muted">Don't have an account?</span>
-                                <a href="<?= base_url('/register/admin') ?>" class="text-decoration-none fw-semibold">Sign Up</a>
+                                <a href="<?= base_url('admin/register') ?>" class="text-decoration-none fw-semibold">Sign Up</a>
                             </div>
                         </form>
                     </div>

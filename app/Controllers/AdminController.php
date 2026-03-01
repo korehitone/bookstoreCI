@@ -29,8 +29,8 @@ class AdminController extends BaseController
      */
     private function requireLogin(): mixed
     {
-        if (!session()->get('isLoggedIn') || !session()->get('isAdmin')) {
-            return redirect()->to('/login')->with('error', 'Please login first.');
+        if (!session()->get('logged_in') || !session()->get('role') == 'admin') {
+            return redirect()->to('admin/login')->with('error', 'Please login first.');
         }
 
         return null;
@@ -47,7 +47,7 @@ class AdminController extends BaseController
      */
     public function register(): string
     {
-        return view('users/signupAdmin');
+        return view('admin/signupAdmin', ['title' => 'Register']);
     }
 
     /**
@@ -80,7 +80,7 @@ class AdminController extends BaseController
             'password' => $this->request->getPost('password'),
         ]);
 
-        return redirect()->to('/login')->with('success', 'Registration successful. Please login.');
+        return redirect()->to('admin/login')->with('success', 'Registration successful. Please login.');
     }
 
     // ===================================================================
@@ -95,11 +95,11 @@ class AdminController extends BaseController
      */
     public function login(): mixed
     {
-        if (session()->get('isLoggedIn')) {
-            return redirect()->to('/admin/books');
+        if (session()->get('logged_in')) {
+            return redirect()->to('/admin');
         }
 
-        return view('users/login');
+        return view('admin/login', ['title' => 'Login']);
     }
 
     /**
@@ -128,12 +128,13 @@ class AdminController extends BaseController
 
         session()->set([
             'admin_id'   => $admin['id'],
-            'username'   => $admin['username'],
-            'isLoggedIn' => true,
-            'isAdmin'    => true,
+            'admin_name'   => $admin['username'],
+            'admin_email'   => $admin['email'],
+            'logged_in' => true,
+            'role'    => 'admin',
         ]);
 
-        return redirect()->to('/admin/books');
+        return redirect()->to('admin');
     }
 
     /**
@@ -144,7 +145,7 @@ class AdminController extends BaseController
     public function logout(): mixed
     {
         session()->destroy();
-        return redirect()->to('/login')->with('success', 'You have been logged out.');
+        return redirect()->to('admin/login')->with('success', 'You have been logged out.');
     }
 
     // ===================================================================
@@ -160,7 +161,7 @@ class AdminController extends BaseController
     {
         if ($redirect = $this->requireLogin()) return $redirect;
 
-        return view('users/profileAdmin', [
+        return view('admin/profile', [
             'title' => 'Admin Profile',
             'admin' => $this->adminModel->find(session()->get('admin_id')),
         ]);
@@ -198,9 +199,9 @@ class AdminController extends BaseController
         ];
 
         $this->adminModel->update($id, $data);
-        session()->set('username', $data['username']);
+        session()->set('admin_name', $data['username']);
 
-        return redirect()->to('/admin/profile')->with('success', 'Profile updated successfully!');
+        return redirect()->to('admin/profile')->with('success', 'Profile updated successfully!');
     }
 
     /**
@@ -217,13 +218,13 @@ class AdminController extends BaseController
 
         // Validate admin ID exists
         if (!$id) {
-            return redirect()->to('/login')->with('error', 'Invalid admin ID.');
+            return redirect()->to('admin/login')->with('error', 'Invalid admin ID.');
         }
 
         // Verify admin exists before deletion
         $admin = $this->adminModel->find($id);
         if (!$admin) {
-            return redirect()->to('/login')->with('error', 'Admin not found.');
+            return redirect()->to('admin/login')->with('error', 'Admin not found.');
         }
 
         // Delete the admin account from database
@@ -232,7 +233,7 @@ class AdminController extends BaseController
         // Destroy session to logout user
         session()->destroy();
 
-        return redirect()->to('/login')->with('success', 'Your account has been deleted successfully.');
+        return redirect()->to('admin/login')->with('success', 'Your account has been deleted successfully.');
     }
 
     // ===================================================================
@@ -277,7 +278,7 @@ class AdminController extends BaseController
 
         // Security note: Return generic message to prevent email enumeration
         if (!$admin) {
-            return redirect()->to('/login')->with('success', 'If that email exists, the password has been reset.');
+            return redirect()->to('admin/login')->with('success', 'If that email exists, the password has been reset.');
         }
 
         // Update password for the admin account
@@ -285,10 +286,6 @@ class AdminController extends BaseController
             'password' => $this->request->getPost('password'),
         ]);
 
-        return redirect()->to('/login')->with('success', 'Password reset successfully. Please login.');
-    }
-
-    public function save(){
-        
+        return redirect()->to('admin/login')->with('success', 'Password reset successfully. Please login.');
     }
 }

@@ -1,150 +1,93 @@
-<!-- Main Content -->
+<?= $this->extend('customer/base') ?>
 
-<main class="flex-grow-1 bg-light py-5">
-    <div class="container">
-        <div class="mb-5">
+<?= $this->section('content') ?>
+
+<div class="container">
+
+    <!-- ===================================================================
+         PAGE HEADER WITH SEARCH
+    =================================================================== -->
+    <div class="row mb-5">
+        <div class="col-12">
             <h2 class="fw-bold text-dark mb-2">Featured Books</h2>
             <p class="text-muted">Discover our curated collection of timeless classics</p>
-        </div>
 
-        <div class="row g-4">
-            <!-- Book 1 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                    <div class="card-body p-4">
-                        <div class="row g-3">
-                            <div class="col-4">
-                                <div class="bg-gradient bg-primary bg-opacity-10 rounded-3 d-flex align-items-center justify-content-center p-3" style="height: 160px;">
-                                    <span class="text-primary fw-semibold small">Book Cover</span>
-                                </div>
-                            </div>
-                            <div class="col-8 d-flex flex-column">
-                                <h5 class="card-title fw-bold mb-2">The Great Gatsby</h5>
-                                <p class="text-muted small mb-2">F. Scott Fitzgerald</p>
-                                <div class="mt-auto">
-                                    <p class="h5 text-primary fw-bold mb-3">IDR 150,000</p>
-                                    <a href="bookPage.html" class="btn btn-dark w-100 rounded-pill">Add to Cart</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Search Bar -->
+            <form action="<?= base_url('books') ?>" method="get" class="mt-4">
+                <div class="input-group shadow-sm">
+                    <input 
+                        type="search" 
+                        name="keyword" 
+                        class="form-control border-0 py-3" 
+                        placeholder="Search by title or author..."
+                        value="<?= esc($keyword ?? '') ?>"
+                    >
+                    <button class="btn btn-outline-secondary" type="submit">Search</button>
                 </div>
-            </div>
-
-            <!-- Book 2 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                    <div class="card-body p-4">
-                        <div class="row g-3">
-                            <div class="col-4">
-                                <div class="bg-gradient bg-success bg-opacity-10 rounded-3 d-flex align-items-center justify-content-center p-3" style="height: 160px;">
-                                    <span class="text-success fw-semibold small">Book Cover</span>
-                                </div>
-                            </div>
-                            <div class="col-8 d-flex flex-column">
-                                <h5 class="card-title fw-bold mb-2">To Kill a Mockingbird</h5>
-                                <p class="text-muted small mb-2">Harper Lee</p>
-                                <div class="mt-auto">
-                                    <p class="h5 text-primary fw-bold mb-3">IDR 175,000</p>
-                                    <a href="bookPage.html" class="btn btn-dark w-100 rounded-pill">Add to Cart</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Book 3 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                    <div class="card-body p-4">
-                        <div class="row g-3">
-                            <div class="col-4">
-                                <div class="bg-gradient bg-danger bg-opacity-10 rounded-3 d-flex align-items-center justify-content-center p-3" style="height: 160px;">
-                                    <span class="text-danger fw-semibold small">Book Cover</span>
-                                </div>
-                            </div>
-                            <div class="col-8 d-flex flex-column">
-                                <h5 class="card-title fw-bold mb-2">1984</h5>
-                                <p class="text-muted small mb-2">George Orwell</p>
-                                <div class="mt-auto">
-                                    <p class="h5 text-primary fw-bold mb-3">IDR 160,000</p>
-                                    <a href="bookPage.html" class="btn btn-dark w-100 rounded-pill">Add to Cart</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Book 4 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                    <div class="card-body p-4">
-                        <div class="row g-3">
-                            <div class="col-4">
-                                <div class="bg-gradient bg-warning bg-opacity-10 rounded-3 d-flex align-items-center justify-content-center p-3" style="height: 160px;">
-                                    <span class="text-warning fw-semibold small">Book Cover</span>
-                                </div>
-                            </div>
-                            <div class="col-8 d-flex flex-column">
-                                <h5 class="card-title fw-bold mb-2">Pride and Prejudice</h5>
-                                <p class="text-muted small mb-2">Jane Austen</p>
-                                <div class="mt-auto">
-                                    <p class="h5 text-primary fw-bold mb-3">IDR 140,000</p>
-                                    <a href="bookPage.html" class="btn btn-dark w-100 rounded-pill">Add to Cart</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Book 5 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                    <div class="card-body p-4">
-                        <div class="row g-3">
-                            <div class="col-4">
-                                <div class="bg-gradient bg-info bg-opacity-10 rounded-3 d-flex align-items-center justify-content-center p-3" style="height: 160px;">
-                                    <span class="text-info fw-semibold small">Book Cover</span>
-                                </div>
-                            </div>
-                            <div class="col-8 d-flex flex-column">
-                                <h5 class="card-title fw-bold mb-2">The Catcher in the Rye</h5>
-                                <p class="text-muted small mb-2">J.D. Salinger</p>
-                                <div class="mt-auto">
-                                    <p class="h5 text-primary fw-bold mb-3">IDR 155,000</p>
-                                    <a href="bookPage.html" class="btn btn-dark w-100 rounded-pill">Add to Cart</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Book 6 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                    <div class="card-body p-4">
-                        <div class="row g-3">
-                            <div class="col-4">
-                                <div class="bg-gradient bg-secondary bg-opacity-10 rounded-3 d-flex align-items-center justify-content-center p-3" style="height: 160px;">
-                                    <span class="text-secondary fw-semibold small">Book Cover</span>
-                                </div>
-                            </div>
-                            <div class="col-8 d-flex flex-column">
-                                <h5 class="card-title fw-bold mb-2">The Hobbit</h5>
-                                <p class="text-muted small mb-2">J.R.R. Tolkien</p>
-                                <div class="mt-auto">
-                                    <p class="h5 text-primary fw-bold mb-3">IDR 180,000</p>
-                                    <a href="bookPage.html" class="btn btn-dark w-100 rounded-pill">Add to Cart</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            </form>
         </div>
     </div>
-</main>
+
+    <!-- ===================================================================
+         BOOKS GRID
+    =================================================================== -->
+    <div class="row g-4">
+        <?php if (!empty($books)): ?>
+            <?php foreach ($books as $book): ?>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm h-100 overflow-hidden">
+                        <div class="card-body p-4">
+                            <div class="row g-3">
+                                <!-- Book Cover -->
+                                <div class="col-4">
+                                    <div class="bg-gradient bg-primary bg-opacity-10 rounded-3 d-flex align-items-center justify-content-center p-2" style="height: 160px;">
+                                        <?php if ($book['img_url']): ?>
+                                            <img 
+                                                src="<?= base_url('uploads/' . $book['img_url']) ?>" 
+                                                alt="<?= esc($book['title']) ?>"
+                                                class="img-fluid rounded shadow-sm" 
+                                                style="max-height: 100%;"
+                                            >
+                                        <?php else: ?>
+                                            <span class="text-primary fw-semibold small">No Cover</span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+
+                                <!-- Book Info -->
+                                <div class="col-8 d-flex flex-column">
+                                    <h5 class="card-title fw-bold mb-2"><?= esc($book['title']) ?></h5>
+                                    <p class="text-muted small mb-2"><?= esc($book['author']) ?></p>
+                                    <div class="mt-auto">
+                                        <p class="h5 text-primary fw-bold mb-3">IDR <?= number_format($book['price'], 0, ',', '.') ?></p>
+                                        <a href="<?= base_url('books/' . $book['id']) ?>" class="btn btn-dark w-100 rounded-pill btn-sm">
+                                            Details
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <!-- Empty State -->
+            <div class="col-12 text-center py-5">
+                <h4 class="text-muted">No books found.</h4>
+                <a href="<?= base_url('books') ?>" class="btn btn-link">Show all books</a>
+            </div>
+        <?php endif; ?>
+    </div>
+
+    <!-- ===================================================================
+         PAGINATION
+    =================================================================== -->
+    <div class="row mt-5">
+        <div class="col-12 d-flex justify-content-center">
+            <?= $pager->links() ?>
+        </div>
+    </div>
+
+</div>
+
+<?= $this->endSection() ?>

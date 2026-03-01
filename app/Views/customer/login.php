@@ -1,5 +1,16 @@
-<?= $this->extend('base') ?>
+<?= $this->extend('customer/base') ?>
 <?= $this->section('content') ?>
+
+<?php
+$validation = \Config\Services::validation();
+$errors = session()->getFlashdata('errors');
+
+if ($errors) {
+    foreach ($errors as $field => $message) {
+        $validation->setError($field, $message);
+    }
+}
+?>
 
 <div class="container">
     <div class="row justify-content-center">
@@ -7,21 +18,6 @@
             <div class="card border shadow-sm">
                 <div class="card-body p-4">
                     <h3 class="card-title text-center mb-4">Login</h3>
-
-                    <?php
-                    $validation = \Config\Services::validation();
-                    $errors = session()->getFlashdata('errors');
-
-                    if ($errors) {
-                        foreach ($errors as $field => $message) {
-                            $validation->setError($field, $message);
-                        }
-                    }
-                    ?>
-
-                    <!-- <>?php // if (session()->getFlashdata('msg')): ?>
-                            <div class="alert alert-danger"><>?= //session()->getFlashdata('msg') ?></div>
-                        <>?php // endif; ?> -->
 
                     <?= form_open('login/auth'); ?>
                     <?= csrf_field(); ?>
@@ -39,9 +35,6 @@
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
                         <input type="password" class="form-control <?= ($validation->hasError('password')) ? 'is-invalid' : '' ?>" name="password" id="password" placeholder="Enter password">
-                        <!-- <div class="text-end mt-2">
-                                    <a href="forgotPass.html" class="text-decoration-none small">Forgot Password?</a>
-                                </div> -->
                         <?php if ($validation->getError('password')): ?>
                             <div class="invalid-feedback">
                                 <?= $validation->showError('password'); ?>
