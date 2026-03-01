@@ -139,7 +139,7 @@ if ($errors) {
 
                     <div class="mb-3">
                         <label for="editAddress" class="form-label fw-semibold">Address</label>
-                        <textarea class="form-control rounded-3" name="editAddressz" id="editAddress" rows="3"><?= $user['user_address'] ?></textarea>
+                        <textarea class="form-control rounded-3" name="editAddress" id="editAddress" rows="3"><?= $user['user_address'] ?></textarea>
                     </div>
 
                 </div>

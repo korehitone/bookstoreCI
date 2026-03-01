@@ -1,6 +1,6 @@
-CREATE VIEW view_cart_item AS SELECT ci.id, ci.cart_id, ci.book_id, b.title, b.author, b.img_url, ci.quantity, SUM(ci.quantity*b.price) as total_price FROM cart_item ci JOIN book b ON ci.book_id = b.id GROUP BY ci.id
+CREATE VIEW view_cart_item AS SELECT ci.id, ci.cart_id, ci.book_id, b.title, b.author, b.img_url, ci.quantity, SUM(ci.quantity*b.price) as total_price, ci.created_at, ci.updated_at FROM cart_item ci JOIN book b ON ci.book_id = b.id GROUP BY ci.id
 
-CREATE VIEW view_cart AS SELECT c.id, c.customer_id, COUNT(*) as total_item, SUM(vci.total_price) as total FROM cart c JOIN view_cart_item vci ON c.id = vci.cart_id GROUP BY c.id
+CREATE VIEW view_cart AS SELECT c.id, c.customer_id, COUNT(*) as total_item, SUM(vci.total_price) as total, c.created_at, c.updated_at FROM cart c JOIN view_cart_item vci ON c.id = vci.cart_id GROUP BY c.id
 
 
 -- store procedure buat admin log

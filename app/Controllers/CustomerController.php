@@ -133,6 +133,7 @@ class CustomerController extends BaseController
 
         $data = [
             'title' => 'Profile',
+            'navCategories' => $this->navCategories,
             'user' => $session->get()
         ];
 

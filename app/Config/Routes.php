@@ -14,7 +14,7 @@ $routes->group('', ['filter' => 'customerAuth'],  function ($routes) {
 
 $routes->get('profile', 'CustomerController::profile');
 $routes->post('profile/update', 'CustomerController::updateProfil');
-$routes->put('profile/password', 'CustomerController::updatePassword');
+$routes->post('profile/password', 'CustomerController::updatePassword');
 $routes->delete('profile/delete', 'CustomerController::delete');
 $routes->get('logout', 'CustomerController::logout');
 
